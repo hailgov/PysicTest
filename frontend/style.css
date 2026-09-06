@@ -1767,7 +1767,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
     }
 
     .app {
-        height: calc(100vh - 82px);
+        height: calc(100vh - 72px);
     }
 
     .sidebar {
@@ -1809,7 +1809,7 @@ input[type="range"]:hover::-webkit-slider-thumb {
     }
 
     .content {
-        padding: 25px 17px 110px;
+        padding: 25px 17px 96px;
     }
 
     .topbar {
@@ -1867,21 +1867,86 @@ input[type="range"]:hover::-webkit-slider-thumb {
     }
 
     .player {
-        height: 82px;
-        grid-template-columns: 1fr;
-        padding: 8px 12px;
-    }
-
-    .player-center {
-        display: none;
+        position: fixed;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px 10px 14px;
+        overflow: hidden;
     }
 
     .player-song {
-        justify-content: center;
+        flex: 1;
+        min-width: 0;
     }
 
     .player-cover {
-        width: 44px;
-        height: 44px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .player-like {
+        display: none;
+    }
+
+    .player-center {
+        display: block;
+        width: auto;
+        flex: none;
+        order: 3;
+    }
+
+    .player-controls {
+        gap: 4px;
+        margin-bottom: 0;
+    }
+
+    .player-control.small {
+        display: none;
+    }
+
+    .player-control:not(.small):not(#play-button) {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+    }
+
+    .play-button {
+        width: 38px;
+        height: 38px;
+        font-size: 13px;
+    }
+
+    .progress-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        gap: 0;
+    }
+
+    .progress-area .time {
+        display: none;
+    }
+
+    #progress {
+        height: 3px;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .player-right {
+        display: none;
+    }
+}
+
+@media (hover: none) {
+    input[type="range"]::-webkit-slider-thumb {
+        opacity: 1;
+        width: 8px;
+        height: 8px;
     }
 }
