@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#07070a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Pysic</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="background-network" aria-hidden="true"></div>
+
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="brand-mark">P</div>
+                <div class="brand-copy">
+                    <strong>Pysic</strong>
+                    <span>music library</span>
+                </div>
+            </div>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <button class="nav-item active" data-page="home">
+                    <span class="nav-icon">⌂</span><span>Home</span>
+                </button>
+                <button class="nav-item" data-page="search">
+                    <span class="nav-icon">⌕</span><span>Search</span>
+                </button>
+                <button class="nav-item" data-page="liked">
+                    <span class="nav-icon">♡</span><span>Liked</span>
+                </button>
+                <button class="nav-item" data-page="cache">
+                    <span class="nav-icon">▣</span><span>Cached</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-head">
+                    <span>Library</span>
+                    <button id="create-playlist-sidebar" class="icon-button small" title="Create playlist">+</button>
+                </div>
+                <div id="sidebar-playlists" class="sidebar-playlists"></div>
+            </div>
+
+            <button id="open-profile" class="profile-card">
+                <div id="sidebar-avatar" class="avatar">L</div>
+                <div class="profile-card-copy">
+                    <span class="muted-label">Profile</span>
+                    <strong id="sidebar-profile-name">Listener</strong>
+                </div>
+                <span class="profile-arrow">›</span>
+            </button>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="back-button" class="icon-button" title="Back">‹</button>
+                    <button id="forward-button" class="icon-button" title="Forward">›</button>
+                </div>
+
+                <div class="search-shell">
+                    <span class="search-symbol">⌕</span>
+                    <input id="global-search-input" type="search"
+                           placeholder="Search songs, artists, albums..."
+                           autocomplete="off" autocapitalize="off" spellcheck="false">
+                    <button id="clear-search" class="search-clear hidden" title="Clear">×</button>
+                </div>
+
+                <button id="top-profile" class="top-profile" title="Profile">
+                    <div id="top-avatar" class="avatar">L</div>
+                    <span id="top-profile-name">Listener</span>
+                </button>
+            </header>
+
+            <div id="content" class="content"></div>
+        </main>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+        <button class="nav-item active" data-page="home"><span>⌂</span><small>Home</small></button>
+        <button class="nav-item" data-page="search"><span>⌕</span><small>Search</small></button>
+        <button class="nav-item" data-page="liked"><span>♡</span><small>Liked</small></button>
+        <button class="nav-item" data-page="cache"><span>▣</span><small>Cached</small></button>
+    </nav>
+
+    <section class="player" aria-label="Music player">
+        <div class="player-inner">
+            <div class="player-song">
+                <div id="player-cover" class="player-cover">
+                    <div class="cover-placeholder">♪</div>
+                </div>
+                <div class="player-song-copy">
+                    <strong id="player-title">Nothing playing</strong>
+                    <span id="player-artist">Choose a song to start</span>
+                </div>
+                <button id="player-like" class="player-action mobile-only" title="Like">♡</button>
+            </div>
+
+            <div class="player-center">
+                <div class="player-controls">
+                    <button id="previous-button" class="player-control" title="Previous">|‹</button>
+                    <button id="skip-back-button" class="player-control secondary" title="Back 10 seconds">-10</button>
+                    <button id="play-button" class="play-button" title="Play">›</button>
+                    <button id="skip-forward-button" class="player-control secondary" title="Forward 10 seconds">+10</button>
+                    <button id="next-button" class="player-control" title="Next">›|</button>
+                </div>
+                <div class="progress-line">
+                    <span id="current-time">0:00</span>
+                    <input id="progress" type="range" min="0" max="100" step="0.1" value="0" aria-label="Playback progress">
+                    <span id="duration-time">0:00</span>
+                </div>
+            </div>
+
+            <div class="player-right">
+                <button id="player-like-desktop" class="player-action" title="Like" onclick="document.getElementById('player-like').click()">♡</button>
+                <button id="loop-button" class="player-action" title="Loop">↻</button>
+                <div class="volume-wrap">
+                    <span>◖</span>
+                    <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <audio id="audio" preload="metadata"></audio>
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Playlist picker -->
+    <div id="playlist-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closePlaylistModal()"></div>
+        <div class="modal-card compact">
+            <div class="modal-head">
+                <div><span class="eyebrow">LIBRARY</span><h2>Add to playlist</h2></div>
+                <button class="icon-button" onclick="closePlaylistModal()">×</button>
+            </div>
+            <div id="playlist-picker-list" class="picker-list"></div>
+        </div>
+    </div>
+
+    <!-- Create playlist -->
+    <div id="create-playlist-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeCreatePlaylistModal()"></div>
+        <div class="modal-card">
+            <div class="modal-head">
+                <div><span class="eyebrow">NEW</span><h2>Create playlist</h2></div>
+                <button id="close-create-playlist" class="icon-button">×</button>
+            </div>
+            <label class="field">
+                <span>Name</span>
+                <input id="playlist-name-input" type="text" maxlength="80" placeholder="Late night">
+            </label>
+            <label class="image-picker">
+                <input id="playlist-image-input" type="file" accept="image/*">
+                <div id="playlist-image-preview" class="image-preview">+</div>
+                <div><strong>Playlist artwork</strong><span>Tap to choose an image</span></div>
+            </label>
+            <div class="modal-actions">
+                <button id="cancel-create-playlist" class="button secondary">Cancel</button>
+                <button id="confirm-create-playlist" class="button primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete playlist -->
+    <div id="delete-playlist-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeDeletePlaylistModal()"></div>
+        <div class="modal-card compact">
+            <div class="modal-head">
+                <div><span class="eyebrow danger-text">DELETE</span><h2>Delete playlist</h2></div>
+                <button id="close-delete-playlist" class="icon-button">×</button>
+            </div>
+            <p class="modal-copy">Type <strong id="delete-playlist-title"></strong> to confirm.</p>
+            <label class="field">
+                <span>Playlist name</span>
+                <input id="delete-playlist-input" type="text" autocomplete="off">
+            </label>
+            <div class="modal-actions">
+                <button id="cancel-delete-playlist" class="button secondary">Cancel</button>
+                <button id="confirm-delete-playlist" class="button danger" disabled>Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile -->
+    <div id="profile-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeProfileModal()"></div>
+        <div class="modal-card">
+            <div class="modal-head">
+                <div><span class="eyebrow">PROFILE</span><h2>Your profile</h2></div>
+                <button id="close-profile" class="icon-button">×</button>
+            </div>
+            <div class="profile-editor">
+                <label class="profile-image-picker">
+                    <input id="profile-image-input" type="file" accept="image/*">
+                    <div id="profile-preview" class="profile-preview">L</div>
+                    <span>Change picture</span>
+                </label>
+                <label class="field">
+                    <span>Display name</span>
+                    <input id="profile-name-input" type="text" maxlength="40" placeholder="Listener">
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button id="cancel-profile" class="button secondary">Cancel</button>
+                <button id="save-profile" class="button primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/app.js" defer></script>
+</body>
+</html>
